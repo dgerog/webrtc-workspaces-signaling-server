@@ -1,0 +1,7 @@
+PORT=9090
+ENABLE_HTTPS="false"
+MAGICK_TOKEN="put your code, e.g. 5fwdgw52-sgcwstr20F-FFgw872FDt35" 
+SALT_STRING="put your code, e.g. GFY6sfs7g%frewp-GFfe6is-gscstrwRDS8"
+DEVELOPMENT="true"
+TWILIO_ACCOUNT_SID=""
+TWILIO_AUTH_TOKEN=""
