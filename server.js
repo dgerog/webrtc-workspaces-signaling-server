@@ -742,5 +742,81 @@ io.on('connection', (socket) => {
         }
         console.log(`-----------------------------------------------------------------------`);
     })
+    .on('mic-toggle', (data) => {
+        const accessError = workspaceModel.checkAccessToken(data);
+        if (accessError != '') {
+            console.log(`|---> Access Error / MIC-TOGGLE `);
+            console.log(data);
+            console.log(`-----------------------------------------------------------------------`);
+            socket.emit(
+                'alert', //inform attendee
+                accessError
+            );
+            return;
+        }
+        
+        //attendee updated the mic state - inform others
+        const ws = workspaceModel.get(data.workspace.id);
+        if (typeof ws === "undefined") {
+            socket.emit(
+                'destroyed', //inform attendee
+                {}
+            );
+            return;
+        }    
+        socket.to(data.workspace.id).emit(
+            'mic-toggle', //inform other participants
+            {
+                attendee: data.attendee,
+                state: data.state,
+            }
+        );
+        console.log(`|---> Attendee Update Mic State (Timestamp:  ${date.getTime()})        `);
+        console.log(`| > SOCKET ID:  ${socket.id}                                           `);
+        console.log(`| > ATTENDEE ID: ${data.attendee.id}                                   `);
+        console.log(`| > STATE: ${data.state}                                               `);
+        if (process.env.DEVELOPMENT == "true") {
+            console.log(data);
+        }
+        console.log(`-----------------------------------------------------------------------`);
+    })
+    .on('cam-toggle', (data) => {
+        const accessError = workspaceModel.checkAccessToken(data);
+        if (accessError != '') {
+            console.log(`|---> Access Error / CAM-TOGGLE `);
+            console.log(data);
+            console.log(`-----------------------------------------------------------------------`);
+            socket.emit(
+                'alert', //inform attendee
+                accessError
+            );
+            return;
+        }
+        
+        //attendee updated the mic state - inform others
+        const ws = workspaceModel.get(data.workspace.id);
+        if (typeof ws === "undefined") {
+            socket.emit(
+                'destroyed', //inform attendee
+                {}
+            );
+            return;
+        }    
+        socket.to(data.workspace.id).emit(
+            'cam-toggle', //inform other participants
+            {
+                attendee: data.attendee,
+                state: data.state,
+            }
+        );
+        console.log(`|---> Attendee Update Mic State (Timestamp:  ${date.getTime()})        `);
+        console.log(`| > SOCKET ID:  ${socket.id}                                           `);
+        console.log(`| > ATTENDEE ID: ${data.attendee.id}                                   `);
+        console.log(`| > STATE: ${data.state}                                               `);
+        if (process.env.DEVELOPMENT == "true") {
+            console.log(data);
+        }
+        console.log(`-----------------------------------------------------------------------`);
+    })
     ;
 });
