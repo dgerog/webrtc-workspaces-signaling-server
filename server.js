@@ -485,17 +485,17 @@ io.on('connection', (socket) => {
             return;
         }
 
+        socket.to(data.workspace.id).emit(
+            'leave', //inform other participants
+            data.attendee
+        );
+        socket.leave(data.workspace.id);
 
         //attendee is leaving, update list
         delete ws.attendees[data.attendee.id];
         delete ws.socketMap[data.attendee.id];
         workspaceModel.append(ws);
 
-        socket.to(data.workspace.id).emit(
-            'leave', //inform other participants
-            data.attendee
-        );
-        socket.leave(data.workspace.id);
         console.log(`|---> Attendee left (Timestamp:  ${date.getTime()})                    `);
         console.log(`| > SOCKET ID:  ${socket.id}                                           `);
         console.log(`| > ATTENDEE ID: ${data.attendee.id}                                   `);
@@ -528,7 +528,7 @@ io.on('connection', (socket) => {
             return;
         }
         
-        if (ws.owner == data.attendee.id) {
+        if (ws.owner == data.kickedAttendee.id) {
             socket.emit(
                 'alert', //inform attendee
                 'Workspace owner cannot be kicked out of workspace.'
@@ -536,19 +536,28 @@ io.on('connection', (socket) => {
             return;
         }
 
+        //
+        socket.emit(
+            'kicked', //inform client
+            data.kickedAttendee
+        );
+        socket.to(data.workspace.id).emit(
+            'kicked', //inform other participants
+            data.kickedAttendee
+        );
+
+        //stop connection with kicked user's socket
+        const kickedSocket = io.sockets.connected[ws.socketMap[data.kickedAttendee.id]];
+        kickedSocket.leave(data.workspace.id);
+        
         //attendee is leaving, update list
-        delete ws.attendees[data.attendee.id];
-        delete ws.socketMap[data.attendee.id];
+        delete ws.attendees[data.kickedAttendee.id];
+        delete ws.socketMap[data.kickedAttendee.id];
         workspaceModel.append(ws);
 
-        socket.to(data.workspace.id).emit(
-            'leave', //inform other participants
-            data.attendee
-        );
-        socket.leave(data.workspace.id);
         console.log(`|---> Attendee kicked (Timestamp:  ${date.getTime()})                  `);
         console.log(`| > SOCKET ID:  ${socket.id}                                           `);
-        console.log(`| > ATTENDEE ID: ${data.attendee.id}                                   `);
+        console.log(`| > ATTENDEE ID: ${data.kickedAttendee.id}                             `);
         console.log(`| > WORKSPACE ID: ${data.workspace.id}                                 `);
         if (process.env.DEVELOPMENT == "true") {
             console.log(data);

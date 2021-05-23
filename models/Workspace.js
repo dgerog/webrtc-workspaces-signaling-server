@@ -61,7 +61,7 @@ class Workspace {
             return ('Please provide a valid workspace ID.');
         }
         else if (typeof data.attendee === "undefined" || typeof data.attendee.id !== "string" || !data.attendee.id.length || data.attendee.id[0] != "_") {
-            return('Please provide a valid workspace ID.');
+            return('Please provide a valid attendee ID.');
         }
         else {
             try {
