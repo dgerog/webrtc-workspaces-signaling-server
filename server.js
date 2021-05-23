@@ -548,7 +548,7 @@ io.on('connection', (socket) => {
 
         //stop connection with kicked user's socket
         const kickedSocket = io.sockets.connected[ws.socketMap[data.kickedAttendee.id]];
-        kickedSocket.leave(data.workspace.id);
+        kickedSocket && kickedSocket.leave(data.workspace.id);
         
         //attendee is leaving, update list
         delete ws.attendees[data.kickedAttendee.id];
